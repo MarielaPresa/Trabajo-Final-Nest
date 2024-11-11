@@ -1,7 +1,5 @@
 export class CancionesModel {
-    id: string
-    name: String
-    genero: String
-    artista: String
-
+    id: string; 
+    nombre: string;
+    artista: string;
 }

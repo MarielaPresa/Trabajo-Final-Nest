@@ -1,102 +1,76 @@
 import { Injectable } from '@nestjs/common';
-import { CancionesModel } from './CancionesModel';
-
+import { CancionesModel } from './cancionesModel';
 @Injectable()
 export class CancionesService {
-    canciones =[]
+    canciones = [];
 
-    constructor () {
-        let cancion = {
-            "id": "1",
-            "name": "Inolvidable",
-            "genero": "balada",
-            "artista":"Luis Miguel" 
-            }
-        this.canciones.push(cancion);
-            cancion = { 
-            "id": "2",
-            "name": "La Incondicional",
-            "genero": "balada",
-            "artista":"Luis Miguel" 
-            }
-            this.canciones.push(cancion);
-            cancion = { 
-            "id": "3",
-            "name": "Hasta que me olvides",
-            "genero": "balada",
-            "artista":"Luis Miguel" 
-            }
-            this.canciones.push(cancion);
-            cancion = { 
-                "id": "4",
-                "name": "Somos novios",
-                "genero": "bolero",
-                "artista":"Luis Miguel" 
-            }
-            this.canciones.push(cancion);
-            cancion = { 
-                    "id":"5",
-                    "name": "Pajaro cantor",
-                    "genero": "folcklore",
-                    "artista":"Abel Pintos" 
-            }
-            this.canciones.push(cancion);
+    constructor() {
+        const cancionesOriginales = [
+            { id: '1', nombre: 'Toto', artista: 'Cacho' },
+            { id: '2', nombre: 'Pepe', artista: 'Juancho' },
+            { id: '3', nombre:'Quique', artista: 'Pepito' },
+            { id: '4', nombre: 'Pepe', artista: 'Lucho' },
+            { id: '5', nombre: 'Moncho', artista: 'Rodolfo' },
             
-        }
-    getCanciones(){
-            return this.canciones
-        }
-    postCanciones (cancion: CancionesModel) {
-            let newcancion = {
-                "id": cancion.id,
-                "name": cancion.name,
-                "genero": cancion.genero,
-                "artista": cancion.artista,
-            }
-            this.canciones.push(cancion)
-            return newcancion
-        }
-    
-    putCanciones(id: string, updatedCancion: CancionesModel) {
-            const index = this.canciones.findIndex(cancion => cancion.id === id);
-            if (index === -1) {
-                return { message: 'Canción no encontrada' };
-            }
-            this.canciones[index] = { ...this.canciones[index], ...updatedCancion };
-            return { Mensaje: 'Canción actualizada', cancion: this.canciones[index] };
-            
-        } 
-        
-
-    
-    getCancionesByName(name: string){
-            for (const cancion of  this.canciones) 
-                    if (cancion.name == name) {
-                    return cancion;
-            
-            }
+        ];
+        this.canciones.push(...cancionesOriginales);
     }
 
-   
-getCancionesbyartista (artista: string){            
-             for (const cancion of  this.canciones) 
-                    if (cancion.artista == artista) {
-                    return cancion;
-                    
-                }
+    getCanciones() {
+        return this.canciones;
+    }
+
+    postCanciones(cancion: CancionesModel) {
+        const newCancion = {
+            id: (this.canciones.length + 1).toString(), // Genera un ID único.
+            name: cancion.nombre,
+            artist: cancion.artista,
+        };
+        this.canciones.push(newCancion);
+        return newCancion;
+    }
+
+    getCancionesbynombre(nombre: string) {
+        return this.canciones.find(cancion => cancion.nombre === nombre);
+    }
+
+    getCancionesbyartista(artista: string) {
+        return this.canciones.filter(cancion => cancion.artista === artista);
+    }
+    putCanciones(id: string, actualizarCancion: CancionesModel) {
+        const index = this.canciones.findIndex(cancion => cancion.id === id);
+        if (index === -1) {
+            return { message: 'Canción no encontrada' };
+        }
+    
+        const { nombre, artista } = actualizarCancion;
+        if (!nombre || !artista) {
+            return { message: 'El nombre y el artista son obligatorios' };
+        }
+    
+        // Crear una nueva canción con los datos actualizados
+        const nuevaCancion = {
+            id,
+            nombre,
+            artista,
+        };
+    
+        // Reemplazar la canción original con la nueva
+        this.canciones[index] = nuevaCancion;
+        
+        return { message: 'Canción actualizada', cancion: nuevaCancion };
+    }
+    
+    
+
+    deleteCancion(id: string) {
+        const index = this.canciones.findIndex(cancion => cancion.id === id);
+        if (index === -1) {
+            return { message: 'Canción no encontrada' };
+        }
+        const deleted = this.canciones.splice(index, 1);
+        return { Mensaje: 'Canción eliminada', cancion: deleted[0] };
+    }
 }
-
-    deleteCanciones():string{
-            return'Delete Canciones';
-}
-
-
-
-
-
-
-
-}
-
 
 

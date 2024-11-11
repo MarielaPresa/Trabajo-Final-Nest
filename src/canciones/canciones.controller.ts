@@ -1,42 +1,57 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { CancionesService } from './canciones.service';
-import { CancionesModel } from './CancionesModel';
+import { CancionesModel } from './cancionesModel';
 
 @Controller('canciones')
 export class CancionesController {
-        constructor(private readonly service: CancionesService) {} // Mueve el constructor dentro de la clase
+    constructor(private readonly service: CancionesService) {}
 
-    @Get() 
+    // Obtener todas las canciones
+    @Get()
     getCanciones() {
         return this.service.getCanciones();
     }
-    @Get("name/:name")
-    getCancionesByName(@Param ("name") name: string) {
-        return this.service.getCancionesByName(name);
-    }
-    @Get("artista/:id")
-    getCancionesbyartista(@Param ("artista") artista: string) {
-        return this.service.getCancionesbyartista (artista)
-    }
+
+    // Crear una nueva canción
     @Post()
-    postCanciones(@Body()newcancion: CancionesModel){
-        return this.service.postCanciones(newcancion);
+    postCanciones(@Body() newCancion: CancionesModel) {
+        return this.service.postCanciones(newCancion);
     }
-    
+
+    // Obtener canción por nombre
+    @Get('nombre/:nombre')
+    getCancionesByNombre(@Param('nombre') nombre: string) {
+        const cancion = this.service.getCancionesbynombre(nombre);
+        if (!cancion) {
+            return { message: `No se encontró ninguna canción con el nombre: ${nombre}` };
+        }
+        return cancion;
+    }
+
+    // Obtener canciones por artista
+    @Get('artista/:artista')
+    getCancionesByArtista(@Param('artista') artista: string) {
+        const canciones = this.service.getCancionesbyartista(artista);
+        if (canciones.length === 0) {
+            return {Mensaje:`No se encontraron canciones del artista: ${artista}` };
+        }
+        return canciones;
+    }
+
+    // Actualizar una canción por ID
     @Put(':id')
-    putCanciones(@Body() newcancion: CancionesModel, @Param('id') id: string) {
-        return this.service.putCanciones(id, newcancion);
+    putCanciones(
+        @Param('id') id: string, 
+        @Body() actualizarCancion: CancionesModel
+    ) {
+        const result = this.service.putCanciones(id, actualizarCancion);
+        if (result.message === 'Canción no encontrada') {
+            return { Mensaje: `No se encontró ninguna canción con el ID: ${id}` };
+        }
+        return result;
     }
-    
-    
-    @Delete()
-    deleteCanciones(): string {
-        return this.service.deleteCanciones();
+    @Delete(':id')
+    deleteCancion(@Param('id') id: string) {
+        return this.service.deleteCancion(id);
     }
-
 }
-
-
-
-
-

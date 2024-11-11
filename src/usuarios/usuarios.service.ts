@@ -3,71 +3,53 @@ import { UsuariosModel } from './usuariosModel';
 
 @Injectable()
 export class UsuariosService {
-    usuarios =[]
+    usuarios = [];
 
-    constructor () {
-        let usuario = {
-            "id": "1",
-            "name": "Inolvidable",
-            }
-        this.usuarios.push(usuario);
-            usuario = { 
-            "id": "2",
-            "name": "La Incondicional",
-            }
-            this.usuarios.push(usuario);
-            usuario = { 
-            "id": "3",
-            "name": "Hasta que me olvides",
-            }
-            this.usuarios.push(usuario);
-            usuario = { 
-                "id": "4",
-                "name": "Somos novios",
-            }
-            this.usuarios.push(usuario);
+    constructor() {
+        const usuariosoriginales = [
+            { id: '1', nombre: 'Alber', apellido: 'Costa' },
+            { id: '2', nombre: 'Feli', apellido: 'Costa' },
+            { id: '3', nombre: 'Sebas', apellido : 'Costa' },
             
+        ];
+        this.usuarios.push(...usuariosoriginales);
     }
-    getUsuarios(){
+
+    getUsuarios() {
         return this.usuarios;
     }
 
-    postUsuarios (usuario: UsuariosModel) {
-            let newusuario = {
-                "id": usuario.id,
-                "name": usuario.name,
-            }
-            this.usuarios.push(usuario)
-            return newusuario
-    }
-    putUsuarios(newusuario:UsuariosModel, id: string): string {
-            return 'Put Usuarios';
-    }
-              
-    getUsuariosByName(name:string){
-            for(const usuario of this.usuarios)
-                if(usuario.name==name)   
-                return usuario;
+    postUsuarios(usuario: UsuariosModel) {
+        const nuevoUsuario = {
+            id: (this.usuarios.length + 1).toString(), 
+            name: usuario.nombre,
+            surname: usuario.apellido,
+        };
+        this.usuarios.push(nuevoUsuario);
+        return nuevoUsuario;
     }
 
-     
-    getUsuariosbyid (id:string){
-        for(const usuario of this.usuarios)
-               if(usuario.id ==id){ 
-            return usuario;
+    getUsuariossbyid(id: string) {
+        return this.usuarios.find(usuario => usuario.id === id);
+    
+    }
+
+    putUsuarios(id: string, actualizarUsuario: UsuariosModel) {
+        const index = this.usuarios.findIndex(usuario => usuario.id === id);
+        if (index === -1) {
+            return { mensaje: 'Usuario no encontrado' };
         }
-    }    
-    deleteUsuarios(): string{
-        return 'Delete Usuarios';   
+        this.usuarios[index] = { ...this.usuarios[index], ...actualizarUsuario };
+        return { Mensaje: 'Usuario actualizado', usuario: this.usuarios[index] };
+        
     }
-            
+
+    deleteUsuarios(id: string) {
+        const index = this.usuarios.findIndex(usuario => usuario.id === id);
+        if (index === -1) {
+            return { Mensaje: 'Usuario no encontrado' };
+        }
+        const deleted = this.usuarios.splice(index, 1);
+        return { Mensaje: 'Usuario eliminado', usuario: deleted[0] };
+    }
 }
-
-
-
-
-
-            
-
-
-
